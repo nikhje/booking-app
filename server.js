@@ -62,6 +62,15 @@ app.post('/api/bookings', async (req, res) => {
         const data = await loadBookings();
         const { userId, date, slot, slotKey } = req.body;
         
+        // Check if user already has a booking
+        const hasExistingBooking = Object.values(data.bookings).some(
+            booking => booking.userId === userId
+        );
+        
+        if (hasExistingBooking) {
+            return res.status(400).json({ error: 'User already has a booking' });
+        }
+        
         // Update bookings
         data.bookings[slotKey] = {
             userId,
