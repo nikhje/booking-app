@@ -25,16 +25,18 @@ async function loadBookings() {
         return JSON.parse(data);
     } catch (error) {
         if (error.code === 'ENOENT') {
-            // Only create a new file if it doesn't exist
+            // Create initial state with some test users
             const initialState = {
-                users: {},
+                users: {
+                    "1": "test1",
+                    "2": "test2"
+                },
                 bookings: {},
-                nextUserId: 1
+                nextUserId: 3
             };
             await fs.writeFile(BOOKINGS_FILE, JSON.stringify(initialState, null, 2));
             return initialState;
         }
-        // For other errors, throw them
         throw error;
     }
 }
