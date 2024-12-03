@@ -102,6 +102,19 @@ app.post('/api/users', async (req, res) => {
     }
 });
 
+// Reset bookings (keeping users)
+app.post('/api/reset', async (req, res) => {
+    try {
+        const data = await loadBookings();
+        // Keep users but reset bookings
+        data.bookings = {};
+        await saveBookings(data);
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to reset bookings' });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });

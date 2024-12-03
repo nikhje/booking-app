@@ -17,6 +17,7 @@ export default function BookingCalendar() {
   const [bookings, setBookings] = useState({}); // slotKey -> booking mapping
   const [nextUserId, setNextUserId] = useState(1);
   const [bookingPeriod, setBookingPeriod] = useState({ start: null, end: null });
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     updateVisibleDays();
@@ -164,9 +165,44 @@ export default function BookingCalendar() {
     return disabled;
   };
 
+  const handleLogout = () => {
+    setCurrentUser(null);
+  };
+
+  const handleReset = async () => {
+    try {
+      const response = await axios.post(`${API_URL}/reset`);
+      if (response.data) {
+        setBookings(response.data.bookings);
+      }
+    } catch (error) {
+      console.error('Failed to reset bookings:', error);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Booking Calendar</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Booking Calendar</h2>
+        <div className="space-x-2">
+          {currentUser && (
+            <>
+              <button
+                onClick={handleReset}
+                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+              >
+                Reset All Bookings
+              </button>
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
+      </div>
       <div className="mb-4 p-4 bg-blue-100 rounded-lg">
         <h3 className="font-semibold">System Status</h3>
         <p>Available user slots: {MAX_USERS - (nextUserId - 1)} of {MAX_USERS}</p>
